@@ -105,6 +105,21 @@ public class TaskRun
         return true;
     }
 
+    /// <summary>Puts a Failed or Skipped task back to Pending with a fresh attempt budget (manual retry).</summary>
+    public bool Reset()
+    {
+        if (Status is not (TaskRunStatus.Failed or TaskRunStatus.Skipped)) return false;
+        Status = TaskRunStatus.Pending;
+        Attempt = 0;
+        Error = null;
+        Output = null;
+        NextAttemptAt = null;
+        StartedAt = null;
+        CompletedAt = null;
+        ClearLease();
+        return true;
+    }
+
     private bool HoldsLease(string owner, DateTimeOffset now) =>
         Status == TaskRunStatus.Running && LeaseOwner == owner && LeaseExpiresAt > now;
 

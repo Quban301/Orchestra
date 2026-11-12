@@ -9,6 +9,7 @@ public class WorkflowRun
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? StartedAt { get; set; }
     public DateTimeOffset? CompletedAt { get; set; }
+    public string? IdempotencyKey { get; set; }
     public List<TaskRun> Tasks { get; set; } = new();
 
     public bool IsTerminal => Status is RunStatus.Succeeded or RunStatus.Failed or RunStatus.Cancelled;
@@ -34,6 +35,19 @@ public class WorkflowRun
         }).ToList();
 
         return run;
+    }
+
+    /// <summary>
+    /// Re-opens a Failed run: failed and skipped tasks go back to Pending with a fresh attempt budget,
+    /// succeeded tasks are kept. The scheduler then re-queues whatever is ready.
+    /// </summary>
+    public bool RetryFailed()
+    {
+        if (Status != RunStatus.Failed) return false;
+        foreach (var t in Tasks) t.Reset();
+        Status = RunStatus.Running;
+        CompletedAt = null;
+        return true;
     }
 
     public void Cancel(DateTimeOffset now)

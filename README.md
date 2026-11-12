@@ -11,4 +11,4 @@ Graceful shutdown: in-flight tasks get a grace period to finish before being can
 Pluggable handlers: add tasks by implementing ITaskHandler
 Tested domain core: the state machine and planner are pure logic with unit tests
 
-Stack: C# / .NET 10, ASP.NET Core, EF Core, PostgreSQL, xUnit. Planned: REST API with auth, React + TypeScript dashboard, OpenTelemetry.
+Stack: C# / .NET 10, ASP.NET Core, EF Core, PostgreSQL, xUnit. REST API with API-key auth, rate limiting and paging (see docs/api.md), and a React + TypeScript dashboard (see dashboard/README.md). Planned: OpenTelemetry, integration and chaos tests.

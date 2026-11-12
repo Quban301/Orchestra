@@ -42,6 +42,10 @@ public class OrchestraDbContext(DbContextOptions<OrchestraDbContext> options) : 
             e.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
             e.HasIndex(x => x.Status);
             e.HasIndex(x => x.CreatedAt);
+            e.Property(x => x.IdempotencyKey).HasMaxLength(200);
+            e.HasIndex(x => new { x.WorkflowDefinitionId, x.IdempotencyKey })
+                .IsUnique()
+                .HasFilter("\"IdempotencyKey\" IS NOT NULL");
             e.HasMany(x => x.Tasks).WithOne().HasForeignKey(t => t.WorkflowRunId).OnDelete(DeleteBehavior.Cascade);
         });
 
